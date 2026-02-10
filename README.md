@@ -18,7 +18,7 @@ chmod +x install.sh
 source ~/.bashrc
 ```
 ---
-⌨️ Commands & Usage
+## ⌨️ Commands & Usage
 Basic Interaction
 
     todo — View the active board
@@ -28,7 +28,7 @@ Basic Interaction
     todo [Title] Task — Add a task with a specific category
 
 ---
-Management
+## Management
 
     todo-del X — Remove task by number (X)
 
@@ -39,7 +39,7 @@ Management
     credits-todo — Show author and project info
 
 ---
-📁 Repository Structure
+## 📁 Repository Structure
 ``` 
 todo-board/
 ├── install.sh
