@@ -11,7 +11,7 @@ The core philosophy of this project is **practicality and minimalism**. Instead 
 ## 🚀 Installation
 
 ```bash
-git clone [https://github.com/Hocksz/todo-board](https://github.com/Hocksz/todo-board)
+git clone https://github.com/Hocksz/todo-board
 cd todo-board
 chmod +x install.sh
 ./install.sh
