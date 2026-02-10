@@ -40,12 +40,13 @@ Management
 
 ---
 📁 Repository Structure
-
+``` 
 todo-board/
 ├── install.sh
 ├── README.md
 └── .config/
     └── scripts/
         └── todo.sh
+```
 
 This tool is a space for me to learn and improve my scripting skills. Feel free to explore, take inspiration, or adapt it to your own setup.
