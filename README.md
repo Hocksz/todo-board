@@ -16,7 +16,8 @@ cd todo-board
 chmod +x install.sh
 ./install.sh
 source ~/.bashrc
-
+```
+---
 ⌨️ Commands & Usage
 Basic Interaction
 
@@ -26,6 +27,7 @@ Basic Interaction
 
     todo [Title] Task — Add a task with a specific category
 
+---
 Management
 
     todo-del X — Remove task by number (X)
@@ -36,6 +38,7 @@ Management
 
     credits-todo — Show author and project info
 
+---
 📁 Repository Structure
 
 todo-board/
