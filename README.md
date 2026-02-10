@@ -24,7 +24,7 @@ Basic Interaction
 
 * **todo "Task"** — Add a quick task
 
-* **todo [Title] Task** — Add a task with a specific category
+* **todo [Title] Task** — Add a task with a specific title
 
 Management
 
