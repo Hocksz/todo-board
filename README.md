@@ -44,7 +44,9 @@ todo-board/
 └── .gitignore
 ```
 ---
+
 This tool is a space for me to learn and improve my scripting skills. Feel free to explore, take inspiration, or adapt it to your own setup.
+
 ---
 ## 🤝 Credits
 
