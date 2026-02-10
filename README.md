@@ -1,4 +1,4 @@
-Todo Board — Minimalist Task Manager
+## Todo Board — Minimalist Task Manager
 
 Todo Board is a lightweight, terminal-based task manager, standalone shell executable. It was designed for those who value a clean, distraction-free workflow and want to manage their daily tasks without leaving the command line.
 
