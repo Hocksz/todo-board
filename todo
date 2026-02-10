@@ -1,0 +1,157 @@
+#!/bin/bash
+
+# Cores para o instalador
+GREEN="\033[1;32m"
+BLUE="\033[1;34m"
+YELLOW="\033[1;33m"
+RESET="\033[0m"
+
+CACHE_FOLDER="$HOME/.cache/todo"
+
+if [ ! -d "$CACHE_FOLDER" ]; then
+	mkdir -p "$CACHE_FOLDER"
+fi
+
+FILE="$CACHE_FOLDER/todo"
+TITLE_FILE="$CACHE_FOLDER/title"
+
+help() {
+    echo -e "\n  ${YELLOW}COMMANDS:${RESET}"
+    echo -e "  ${CYAN}todo [Task]${RESET}          - Add task"
+    echo -e "  ${CYAN}todo [Title] Task${RESET}   - Add task with category"
+    echo -e "  ${CYAN}todo${RESET}                - View board"
+    echo -e "  ${CYAN}todo del X${RESET}          - Remove task X"
+    echo -e "  ${CYAN}todo clear${RESET}          - Clear all"
+    echo -e "  ${CYAN}todo rename \"Name\"${RESET}  - Rename board"
+    echo -e "  ${CYAN}todo credits${RESET}        - Author info"
+    echo ""
+    return 0
+}
+
+# --- TODO BOARD SCRIPT ---
+todo() {
+    touch "$FILE"
+    
+    local BOARD_NAME=$(cat "$TITLE_FILE" 2>/dev/null || echo "TODO BOARD")
+
+    local GRAY="\033[0;90m"
+    local CYAN="\033[1;36m"
+    local DIM_WHITE="\033[0;37m"
+
+    local TOP="┌────────────────────────────────────────────────────────────┐"
+    local MID="├────────────────────────────────────────────────────────────┤"
+    local BOT="└────────────────────────────────────────────────────────────┘"
+
+    if [ -n "$1" ]; then
+        local input_text="$*"
+        echo "$(date +'%b %d') | ${input_text}" >> "$FILE"
+        echo -e "  ${YELLOW}» Task saved.${RESET}"
+    else
+        echo -e "${BLUE}${TOP}${RESET}"
+        printf "${BLUE}│${RESET}  ➜ ${YELLOW}%-54s${RESET}${BLUE}│${RESET}\n" "$BOARD_NAME"
+        echo -e "${BLUE}${MID}${RESET}"
+
+        if [ ! -s "$FILE" ]; then
+            echo -e "   ${GRAY}No active tasks.${RESET}"
+            local total_tasks=0
+        else
+            local idx=1
+            while IFS= read -r line || [ -n "$line" ]; do
+                local date_part="${line%%|*}"
+                local full_content="${line#*|}"
+                full_content=$(echo "$full_content" | sed 's/^todo //g' | xargs)
+                date_part=$(echo "$date_part" | xargs)
+
+                local title_content="Task"
+                local body_text="$full_content"
+                if [[ "$full_content" =~ \[([^\]]+)\](.*)$ ]]; then
+                    title_content="${BASH_REMATCH[1]}"
+                    body_text="${BASH_REMATCH[2]}"
+                fi
+
+                echo -e "  ${CYAN}${idx}.${RESET} [${YELLOW}${title_content}${RESET}] ${GRAY}(${date_part})${RESET}"
+                if [ -n "$body_text" ]; then
+                    echo "$body_text" | fold -s -w 52 | while read -r subline; do
+                        echo -e "      ${DIM_WHITE}${subline}${RESET}"
+                    done
+                fi
+                echo "" 
+                ((idx++))
+            done < "$FILE"
+            local total_tasks=$((idx - 1))
+        fi
+
+        echo -e "${BLUE}${MID}${RESET}"
+        local current_time=$(date +"%H:%M")
+        printf "  ${GRAY}Active: %s tasks ${RESET} %34s ${GRAY}%s${RESET}\n" "$total_tasks" "Last update:" "$current_time"
+        echo -e "${BLUE}${BOT}${RESET}"
+    fi
+}
+
+todo-rename() {
+    if [ -z "$1" ]; then
+        echo "Usage: rename-todo \"New Name\""
+        return 1
+    fi
+    echo "$*" > "$TITLE_FILE"
+    echo -e "  ${YELLOW}» Board renamed to: $*${RESET}"
+}
+
+todo-del() {
+    if [ -z "$1" ]; then
+        echo "Usage: todo-del [number]"
+        return 1
+    fi
+    sed -i "${1}d" "$FILE"
+    echo -e "  ${YELLOW}× Task $1 removed!${RESET}"
+}
+
+todo-clear() {
+    echo -en "  ${YELLOW}! Clear ALL tasks? (y/n): ${RESET}"
+    read confirm
+    if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
+        > "$FILE"
+        echo -e "  ${YELLOW}× Task list cleared!${RESET}"
+    fi
+}
+
+todo-credits() {
+    local CYAN="\033[1;36m"
+    local GRAY="\033[0;90m"
+    local PURPLE="\033[1;35m"
+
+    echo -e "\n  ${YELLOW}TODO BOARD${RESET} ${GRAY}v1.0${RESET}"
+    echo -e "  ${GRAY}────────────────────────────────────────────────────────────${RESET}"
+    echo -e "  Built by ${PURPLE}Hocks${RESET}."
+    echo -e "\n  I really appreciate you using this tool, and I hope it 
+  helps you stay organized."
+    echo -e "\n  If you find it useful, I would be grateful if you could
+  leave a star on my GitHub repository."
+    echo -e "\n  ${CYAN}➜ https://github.com/Hocksz${RESET}"
+    echo -e "  ${GRAY}────────────────────────────────────────────────────────────${RESET}\n"
+}
+
+case "${1:-}" in
+  -h|--help|help)
+	help
+	;;
+  del)
+	todo-del "$2"
+    ;;
+  rename)
+	todo-rename "$2"
+    ;;
+  credits)
+	todo-credits
+    ;;
+  clear)
+	todo-clear
+    ;;
+  "")
+	todo "$2"
+    ;;
+  *)
+    # first argument exists but is not any of the above
+	todo "$2"
+    ;;
+esac
