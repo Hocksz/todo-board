@@ -5,6 +5,7 @@ GREEN="\033[1;32m"
 BLUE="\033[1;34m"
 YELLOW="\033[1;33m"
 RESET="\033[0m"
+CLEAR="\033c"
 
 TODO_DIR="$HOME/.local/share/todo"
 
@@ -88,6 +89,28 @@ todo() {
     fi
 }
 
+# Running this will draw the board once, then hang and expect SIGUSR1 signals. When a signal is received, it draws the board again. Useful for scripting widgets or other such tasks.
+todo-watch() {
+    # run once immediately
+    todo
+
+    # handler to rerun the board on SIGUSR1
+    _rerun() {
+	printf $CLEAR
+        todo
+    }
+
+    # trap SIGUSR1 to call _rerun
+    trap _rerun SIGUSR1
+
+    # keep process alive waiting for signals
+    # Ctrl-C (SIGTERM) still exits the process
+    while true; do
+        # sleep in small increments so process is responsive to other signals
+        sleep 86400 & wait $!
+    done
+}
+
 todo-rename() {
     # Se não houver argumentos, avisa o usuário
     if [ -z "$1" ]; then
@@ -150,6 +173,9 @@ case "${1:-}" in
     ;;
   clear)
     todo-clear
+    ;;
+  watch)
+    todo-watch
     ;;
   "")
     # Se não digitar nada, apenas mostra o board
